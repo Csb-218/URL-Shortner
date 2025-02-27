@@ -7,6 +7,7 @@ export async function getAllURLs (req:Request, res:Response){
     const urls = await Url.find().sort({ createdAt: -1 });
     return res.json(urls);
   } catch (error) {
+    console.error(error);
     return res.status(500).json({ error: 'Error fetching URLs' });
   }
 };
@@ -68,6 +69,7 @@ export async function  incrementClicks (req:Request, res:Response) {
 };
 
 export async function deleteURL (req:Request, res:Response) {
+  console.log('deleteURL')
   try {
     const url = await Url.findOneAndDelete({ urlId: req.params.id });
     if (!url) {
