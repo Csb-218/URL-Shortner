@@ -8,7 +8,18 @@ export default defineConfig({
     port: 4000,
     host: true
   },
+  preview: {
+    port: 4000
+  },
   optimizeDeps: {
     exclude: ['lucide-react'],
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: undefined
+      }
+    }
+  },
+  base: '/'
 });
