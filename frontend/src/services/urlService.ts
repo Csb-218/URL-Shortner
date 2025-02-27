@@ -1,6 +1,6 @@
 import { UrlEntry } from '../types';
 
-const API_BASE_URL = "http://localhost:3000"; // Adjust this to your backend URL
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL; // Adjust this to your backend URL
 
 // Load URLs from backend
 export const loadUrls = async (): Promise<UrlEntry[]> => {
