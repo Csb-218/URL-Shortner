@@ -1,7 +1,7 @@
 export interface UrlEntry {
-  id: string;
+  urlId: string;
   originalUrl: string;
   shortUrl: string;
-  createdAt: number;
   clicks: number;
+  createdAt: Date;
 }
