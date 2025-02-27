@@ -15,7 +15,7 @@ const HomePage: React.FC = () => {
     try {
       setLoading(true);
       const urlData = await loadUrls();
-      setUrls(urlData.sort((a, b) => b.createdAt - a.createdAt));
+      setUrls(urlData.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
       setError(null);
     } catch (err) {
       setError('Failed to load URLs');
