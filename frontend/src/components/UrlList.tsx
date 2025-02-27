@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Clipboard, ExternalLink, Trash2 } from 'lucide-react';
 import { UrlEntry } from '../types';
-import { deleteUrl } from '../services/urlService';
+import { deleteUrl , incrementClicks} from '../services/urlService';
 
 interface UrlListProps {
   urls: UrlEntry[];
@@ -11,20 +11,21 @@ interface UrlListProps {
 const UrlList: React.FC<UrlListProps> = ({ urls, onDelete }) => {
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  const handleCopy = (shortUrl: string, id: string) => {
+  const handleCopy = async(shortUrl: string, id: string) => {
     navigator.clipboard.writeText(shortUrl);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
+    await incrementClicks(id)
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async(id: string) => {
     if (window.confirm('Are you sure you want to delete this URL?')) {
-      deleteUrl(id);
+      await deleteUrl(id);
       onDelete();
     }
   };
 
-  const formatDate = (timestamp: number) => {
+  const formatDate = (timestamp: Date) => {
     return new Date(timestamp).toLocaleDateString();
   };
 
@@ -61,60 +62,63 @@ const UrlList: React.FC<UrlListProps> = ({ urls, onDelete }) => {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {urls.map((url) => (
-              <tr key={url.id}>
-                <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 truncate max-w-[150px]">
-                  <a 
-                    href={url.originalUrl} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="hover:text-blue-600 flex items-center"
-                  >
-                    {url.originalUrl}
-                    <ExternalLink className="h-4 w-4 ml-1 inline" />
-                  </a>
-                </td>
-                <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <a 
-                    href={`s/${url.shortUrl.split('/').pop()}`}
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline"
-                  >
-                    {url.shortUrl.split('/').pop()}
-                  </a>
-                </td>
-                <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {formatDate(url.createdAt)}
-                </td>
-                <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {url.clicks}
-                </td>
-                <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => handleCopy(url.shortUrl, url.id)}
-                      className="text-gray-600 hover:text-blue-600"
-                      title="Copy to clipboard"
+            {urls.map((url) => {
+              return (
+                <tr key={url.urlId}>
+                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 truncate max-w-[150px]">
+                    <a
+                      href={url.originalUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-blue-600 flex items-center"
                     >
-                      <Clipboard className="h-5 w-5" />
-                      {copiedId === url.id && (
-                        <span className="absolute bg-gray-800 text-white text-xs rounded py-1 px-2 -mt-12 ml-[-20px]">
-                          Copied!
-                        </span>
-                      )}
-                    </button>
-                    <button
-                      onClick={() => handleDelete(url.id)}
-                      className="text-gray-600 hover:text-red-600"
-                      title="Delete"
+                      {url.originalUrl}
+                      <ExternalLink className="h-4 w-4 ml-1 inline" />
+                    </a>
+                  </td>
+                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <a
+                      href={`s/${url.shortUrl.split('/').pop()}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline"
                     >
-                      <Trash2 className="h-5 w-5" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+                      {url.shortUrl.split('/').pop()}
+                    </a>
+                  </td>
+                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {formatDate(url.createdAt)}
+                  </td>
+                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {url.clicks}
+                  </td>
+                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => handleCopy(url.shortUrl, url.urlId)}
+                        className="text-gray-600 hover:text-blue-600"
+                        title="Copy to clipboard"
+                      >
+                        <Clipboard className="h-5 w-5" />
+                        {copiedId === url.urlId && (
+                          <span className="absolute bg-gray-800 text-white text-xs rounded py-1 px-2 -mt-12 ml-[-20px]">
+                            Copied!
+                          </span>
+                        )}
+                      </button>
+                      <button
+                        onClick={() => handleDelete(url.urlId)}
+                        className="text-gray-600 hover:text-red-600"
+                        title="Delete"
+                      >
+                        <Trash2 className="h-5 w-5" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              )
+            }
+            )}
           </tbody>
         </table>
       </div>
