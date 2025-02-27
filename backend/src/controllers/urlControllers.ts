@@ -16,7 +16,7 @@ export async function createURL (req:Request, res:Response){
   try {
     const { originalUrl } = req.body;
     const urlId = shortid.generate();
-    const shortUrl = `${process.env.BASE_URL}/api/${urlId}`;
+    const shortUrl = `${process.env.BASE_URL}/s/${urlId}`;
 
     const url = new Url({
       urlId,
