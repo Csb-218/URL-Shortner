@@ -2,7 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import {URLRouter} from "./src/routes/urls"
+import { URLRouter } from "./src/routes/urls"
 import indexRouter from "./src/routes"
 
 dotenv.config();
@@ -16,28 +16,12 @@ app.use("/api", URLRouter);
 
 const PORT = process.env.PORT || 3000;
 
-const uri = process.env.DB_URI as string;
-const clientOptions = { serverApi: { version: '1' as const, strict: true, deprecationErrors: true } };
-async function run() {
-  try {
-    // Create a Mongoose client with a MongoClientOptions object to set the Stable API version
-    await mongoose.connect(uri, clientOptions);
-    if (mongoose.connection.db) {
-      await mongoose.connection.db.admin().command({ ping: 1 });
-      console.log("Pinged your deployment. You successfully connected to MongoDB!");
 
-      app.listen(PORT, () => {
-        console.log(`Server running on port ${PORT}`);
-      });
+// mongo connection
+import { connectMongoDb} from './src/lib/dbConnect';
+connectMongoDb();
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
 
-    } else {
-      throw new Error("Database connection is undefined");
-    }
-    
-  } finally {
-    // Ensures that the client will close when you finish/error
-    await mongoose.disconnect();
-  }
-}
 
-run().catch(console.dir);
